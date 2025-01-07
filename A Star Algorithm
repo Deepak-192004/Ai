@@ -1,0 +1,47 @@
+class Graph:
+    def __init__(self, adjac_lis):
+        self.adjac_lis = adjac_lis
+
+    def get_neighbors(self, v):
+        return self.adjac_lis[v]
+
+    def h(self, n):
+        return {'A': 1, 'B': 1, 'C': 1, 'D': 1}[n]
+
+    def a_star_algorithm(self, start, stop):
+        open_lst, closed_lst, poo, par = set([start]), set(), {start: 0}, {start: start}
+        while open_lst:
+            n = min(open_lst, key=lambda v: poo[v] + self.h(v))
+            if n == stop:
+                path = []
+                while par[n] != n:
+                    path.append(n)
+                    n = par[n]
+                path.append(start)
+                return path[::-1]
+            open_lst.remove(n)
+            closed_lst.add(n)
+            for (m, weight) in self.get_neighbors(n):
+                if m not in open_lst and m not in closed_lst:
+                    open_lst.add(m)
+                    par[m] = n
+                    poo[m] = poo[n] + weight
+                elif poo[m] > poo[n] + weight:
+                    poo[m], par[m] = poo[n] + weight, n
+                    if m in closed_lst:
+                        closed_lst.remove(m)
+                        open_lst.add(m)
+        return None
+
+# Input
+adjac_lis = {
+    'A': [('B', 1), ('C', 3)],
+    'B': [('A', 1), ('D', 4)],
+    'C': [('A', 3), ('D', 1)],
+    'D': [('B', 4), ('C', 1)]
+}
+graph = Graph(adjac_lis)
+path = graph.a_star_algorithm('A', 'D')
+
+# Output
+print("Path found:", path)
